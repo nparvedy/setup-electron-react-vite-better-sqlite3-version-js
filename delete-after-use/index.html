@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion de paiements</title>
+  <style>
+    :root { --green-light: rgba(0,128,0,0.1); --red-light: rgba(255,0,0,0.1); }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
+    #sidebar { width: 400px; padding: 20px; background: #f9f9f9; overflow-y: auto; }
+    #content { flex: 1; padding: 20px; overflow-y: auto; }
+    h1 { margin-top: 0; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    form input, form button { padding: 8px; font-size: 1rem; }
+    form button { cursor: pointer; }
+    #balance { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    .month-header td { background: #eee; font-weight: bold; }
+    tr.positive { background: var(--green-light); }
+    tr.negative { background: var(--red-light); }
+    input{border: 1px solid #e3e3e3;}
+    /* Modal */
+    #modal { position: fixed; top: 0; left: 0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; }
+    #modal .box { background:#fff; padding:20px; width: 300px; border-radius:8px; }
+    .button-valid{background-color: #7a91ff;border: 1px solid #ffffff;border-radius: 4px;color: white;font-weight: bold;font-family: system-ui;text-transform: uppercase;font-size: 20px;padding: 8px;width: 100%;cursor: pointer;}
+    .button-valid:hover{
+      box-shadow:rgba(60, 64, 67, .3) 1px 1px 0px 0;
+    }
+
+    .button-valid-green{background-color: #4fb536;border: 1px solid #ffffff;border-radius: 4px;color: white;font-weight: bold;font-family: system-ui;text-transform: uppercase;font-size: 20px;padding: 8px;cursor: pointer;}
+    .button-valid-green:hover{
+      box-shadow:rgba(60, 64, 67, .3) 1px 1px 0px 0;
+    }
+    .button-cancel{background-color: #797a81;border: 1px solid #ffffff;border-radius: 4px;color: white;font-weight: bold;font-family: system-ui;text-transform: uppercase;font-size: 20px;padding: 8px;width: 100%;cursor: pointer;}
+    .button-cancel:hover{
+      box-shadow:rgba(60, 64, 67, .3) 1px 1px 0px 0;
+    }
+    #limit-date{
+      font-size:25px;
+    }
+    /* Responsive */
+    @media(max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar { width: 100%; height: auto; }
+      #content { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h1>Formulaires</h1>
+    <form id="form-payment">
+      <input type="hidden" id="pay-id">
+      <input type="text" id="source" placeholder="Source" required>
+      <input type="number" id="amount" placeholder="Montant" step="0.01" required>
+      <input type="date" id="date" required>
+      <input type="number" id="months" placeholder="Mois répé." required>
+      <label>Pause <input type="checkbox" id="pause"></label>
+      <button type="submit" class="button-valid">Enregistrer</button>
+      <button type="button" id="cancel" style="display:none;">Annuler</button>
+    </form>
+
+    <div id="balance">Solde: <span id="balance-val">...</span> €</div>
+
+    <h2>Modifier par source</h2>
+    <button id="open-batch" class="button-cancel">Ouvrir modale</button>
+
+    <h2>Date limite</h2>
+    <input type="date" id="limit-date">
+    <button id="set-limit" class="button-valid-green">Valider</button>
+  </div>
+
+  <div id="content">
+    <h2>Paiements</h2>
+    <table>
+      <thead><tr><th>Actions</th><th>Source</th><th>Montant</th><th>Date</th><th>Mois</th><th>Pause</th></tr></thead>
+      <tbody id="payments"></tbody>
+    </table>
+  </div>
+
+  <!-- Modale Batch -->
+  <div id="modal">
+    <div class="box">
+      <h2>Mise à jour en masse</h2>
+      <form id="batch-form">
+        <input type="text" id="batch-source" placeholder="Source" required>
+        <input type="number" id="batch-amount" placeholder="Nouveau Montant" step="0.01" required>
+        <input type="date" id="batch-start" required>
+        <input type="date" id="batch-end" required>
+        <button type="submit" class="button-valid">Appliquer</button>
+        <button type="button" id="close-batch" class="button-cancel">Fermer</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
